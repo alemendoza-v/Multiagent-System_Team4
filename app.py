@@ -1,8 +1,5 @@
 from flask import Flask, jsonify
-import os
 from model import SimulationModel
-
-from agents import board
 
 app = Flask(__name__)
 
@@ -22,16 +19,9 @@ def run():
     ]
     }
 
-    board = {
-        'cars' : {},
-        'roads': {},
-        'traffic_lights': {},
-    }
-
     model = SimulationModel(parameters)
     results = model.run()
-
-    return jsonify(results.reporters.results.to_dict()[0]['results'])
+    return results.reporters.results.to_dict()[0]
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

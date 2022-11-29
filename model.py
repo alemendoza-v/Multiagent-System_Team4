@@ -25,23 +25,32 @@ class SimulationModel(ap.Model):
           'max_velocity': road.max_velocity
       }
 
-  def addSteptoBoard(self,):
-    tempStep = {}
+  def addSteptoBoard(self):
+    tempStep = {'step': []}
 
     for car in self.cars:
       tempx = car.position[0]
       tempy = car.position[1]
-      tempStep[str(car.id)] = {
-          'position': [tempx, tempy],
+      tempCar = {
+          'id': car.id,
+          'type': 1,
+          'color': -1,
+          'position': [float(tempx), float(tempy)],
           'velocity': car.velocity,
       }
+      tempStep['step'].append({'agent': tempCar})
 
     for tl in self.traffic_lights:
-      tempStep[str(tl.id)] = {
-          'color': tl.currentColor
+      tempTL = {
+          'id': tl.id,
+          'type': 0,
+          'color': tl.currentColor,
+          'position': [float(-1), float(-1)],
+          'velocity': -1,
       }
+      tempStep['step'].append({'agent': tempTL})
 
-    self.results['results'].append(tempStep)
+    self.results['steps'].append(tempStep) 
 
   def checkCars(self):
     carsToDelete = []
@@ -116,7 +125,7 @@ class SimulationModel(ap.Model):
     self.counter = 0
     self.carCounter = 1
 
-    self.results = {'results': []}
+    self.results = {'steps': []}
 
   def step(self):
     # Add a car evert 150 frames, until the max car limit has been reached
@@ -130,7 +139,6 @@ class SimulationModel(ap.Model):
     carsToDelete = self.checkCars()
     if carsToDelete:
         for car in carsToDelete:
-            print(car)
             self.cars.remove(car)
             del board['cars'][str(car.id)]
     # Move cars
