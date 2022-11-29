@@ -1,9 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask
 from model import SimulationModel
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
-# port = int(os.getenv('PORT', 8000))
+port = int(os.getenv('PORT', 8000))
 
 @app.route('/run')
 def run():
@@ -24,4 +25,4 @@ def run():
     return results.reporters.results.to_dict()[0]
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
