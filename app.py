@@ -6,11 +6,11 @@ app = Flask(__name__, static_url_path='')
 
 port = int(os.getenv('PORT', 8000))
 
-@app.route('/run')
-def run():
+@app.route('/run/<int:cars>')
+def run(cars):
     # Run simulation
     parameters = {
-    'cars': 5,
+    'cars': cars,
     'steps': 3000,
     'matrix': [
         [0, 1, 0, 0],
