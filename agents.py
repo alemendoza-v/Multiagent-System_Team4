@@ -14,6 +14,7 @@ class TrafficLight(ap.Agent):
     self.waitTime = 0
     self.road = road
     self.yellowTime = 0
+    self.waiting = False
 
   def changeColor(self):
     if self.currentColor == 1:
@@ -35,18 +36,21 @@ class TrafficLight(ap.Agent):
       else:
         self.yellowTime += 1
 
-    waiting = False
     for car in board['cars']:
       if board['cars'][str(car)]['currentRoad'] == self.road:
         # If there's a car on the road
         if board['roads'][str(self.road + 1)]['direction'] == 'H':
-          if abs(board['cars'][str(car)]['position'][0]) <= board['roads'][str(self.road + 1)]['endPosition'][0] + 5:
-            waiting = True
+          if abs(board['cars'][str(car)]['front_position'][0]) <= board['roads'][str(self.road + 1)]['endPosition'][0] + 15:
+            self.waiting = True
+            break
         elif board['roads'][str(self.road + 1)]['direction'] == 'V':
-          if abs(board['cars'][str(car)]['position'][1]) <= board['roads'][str(self.road + 1)]['endPosition'][1] + 5:
-            waiting = True
-
-    if waiting and self.currentColor != 1:
+          if abs(board['cars'][str(car)]['front_position'][1]) <= board['roads'][str(self.road + 1)]['endPosition'][1] + 15:
+            self.waiting = True
+            break
+    else:
+      self.waiting = False
+    
+    if self.waiting and self.currentColor != 1:
       self.waitTime += 1
       board['traffic_lights'][str(self.id)]['waitTime'] = self.waitTime
 
@@ -98,9 +102,9 @@ class Car(ap.Agent):
     roads[validRoads[self.startRoadIndex]].addCar(self) # Add the car to the start road
 
     self.velocity = random.randint(round(self.startRoad.max_velocity / 10, 0), self.startRoad.max_velocity) # Start car with a random velocity
-    self.acceleration = random.uniform(2, 5) # Random acceleration value
-    self.deacceleration = random.uniform(4, 7) * -1 # Random deacceleration value
-    self.length = 5 # Length of the car (m) (Longaniza de un carro)
+    self.acceleration = 5 # Random acceleration value
+    self.deacceleration = -7 # Random deacceleration value
+    self.length = 15 # Length of the car (m) (Longaniza de un carro)
     self.position = [self.startRoad.startPosition[0], self.startRoad.startPosition[1]] # Middle position of car (used for unity)
     if self.startRoad.direction == 'H': # If the car is on a horizontal road
       self.front_position = [self.position[0] + (self.length / 2), self.position[1]] # Calculate front position
@@ -130,7 +134,7 @@ class Car(ap.Agent):
 
   # Calculate the necessary distance for the car to brake
   def distToBrake(self):
-    return -(pow(self.velocity, 2)) / (self.deacceleration * 2) + 2
+    return -(pow(self.velocity, 2)) / (self.deacceleration * 2) + 10
 
   # Update the position of the car (v * t)
   def updatePosition(self, mfR):
@@ -156,7 +160,7 @@ class Car(ap.Agent):
         
     elif road.direction == 'V':
       if index >= 1:
-        return road.cars[index].front_position[1] - road.cars[index - 1].rear_position[1]
+        return road.cars[index].rear_position[1] - road.cars[index - 1].front_position[1]
       else:
         # El semáforo está en frente
         return road.cars[index].front_position[1] - road.endPosition[1]
@@ -187,28 +191,22 @@ class Car(ap.Agent):
       self.accelerate(mfR)
 
     else:
-      if distance_to_brake < distance:
-        # Look at traffic light 
-        if 1 in board['validChanges'][self.currentRoad]:
-          if distance_to_brake < self.calculateDistanceToTrafficLight(self.startRoad):
-            color = self.checkTrafficLight()
-
-            if color == 2:
-              self.brake(mfR)
-
-            else:
-              self.accelerate(mfR)
-
-          else:
-              self.brake(mfR)
-        
-        else:
+      color = self.checkTrafficLight() # Get the traffic light color
+      if distance_to_brake < distance: # Car can brake
+        if color == 1: # If the traffic light is green
           self.accelerate(mfR)
-
-      else:
-        if self.checkTrafficLight() == 1:
+        elif distance_to_brake < self.calculateDistanceToTrafficLight(self.startRoad): # Car can brake
           self.accelerate(mfR)
-        else:
+        else: # Car cant break
+          self.brake(mfR)
+      else: # Car cant brake
+        if color == 1 and self.startRoad.cars.index(self) == 0: # If the traffic light is green and the car is the first one
+          self.accelerate(mfR)
+        elif color == 1 and self.velocity == 0: # If the traffic light is green
+          self.accelerate(mfR)
+        elif color == 1 and distance_to_brake > distance:
+          self.brake(mfR)
+        else: # If the traffic light is red or yellow
           self.brake(mfR)
 
     self.updatePosition(mfR)

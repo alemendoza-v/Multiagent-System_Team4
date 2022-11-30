@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from model import SimulationModel
 import os
 
@@ -11,7 +11,7 @@ def run(cars):
     # Run simulation
     parameters = {
     'cars': cars,
-    'steps': 3000,
+    'steps': 5000,
     'matrix': [
         [0, 1, 0, 0],
         [0, 0, 0, 0],
@@ -22,7 +22,7 @@ def run(cars):
 
     model = SimulationModel(parameters)
     results = model.run()
-    return results.reporters.results.to_dict()[0]
+    return jsonify(results.reporters.results.to_dict()[0])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, debug=False)

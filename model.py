@@ -6,7 +6,8 @@ from agents import board
 
 class SimulationModel(ap.Model):
   def addCarToBoard(self, car):
-    board['cars'][str(car.id)] = {      # estas cosas si se manejan con referencias
+    board['cars'][str(car.id)] = {
+        'front_position': car.front_position,      # estas cosas si se manejan con referencias
         'position': car.position,
         'currentRoad': car.currentRoad,
     }
@@ -128,8 +129,8 @@ class SimulationModel(ap.Model):
     self.results = {'steps': []}
 
   def step(self):
-    # Add a car evert 150 frames, until the max car limit has been reached
-    if self.counter % 150 == 0 and self.carCounter < self.p.cars and self.counter != 0: 
+    # Add a car evert 180 frames, until the max car limit has been reached
+    if self.counter % 180 == 0 and self.carCounter < self.p.cars and self.counter != 0: 
       tempCar = Car(self, self.roads)
       self.cars.append(tempCar)
       self.addCarToBoard(tempCar)
@@ -147,8 +148,6 @@ class SimulationModel(ap.Model):
     self.traffic_lights.changeColor()
     # Update counter
     self.counter += 1
-
-    # print(board)
 
   def update(self):
     self.addSteptoBoard()
