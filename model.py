@@ -89,8 +89,6 @@ class SimulationModel(ap.Model):
   def setup(self):
     board['validChanges'] = self.p.matrix
 
-    self.positions = []
-
     # Roads for the simulation
     newRoads = [
         Road(self, 20, 'H', [-300, 0], [0, 0], self.p.matrix),

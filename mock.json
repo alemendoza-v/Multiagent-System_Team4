@@ -1,0 +1,60 @@
+{
+   "steps": [
+      {
+         "step": [
+            {
+               "agent": {
+                  "color": -1,
+                  "id": 8,
+                  "position": [
+                     -300.0,
+                     0.0
+                  ],
+                  "type": 1,
+                  "velocity": 7
+               }
+            },
+            {
+               "agent": {
+                  "color": -1,
+                  "id": 9,
+                  "position": [
+                     -300.0,
+                     0.0
+                  ],
+                  "type": 1,
+                  "velocity": 7
+               }
+            }
+         ]
+      },
+      {
+         "step": [
+            {
+               "agent": {
+                  "color": 99,
+                  "id": 8,
+                  "position": [
+                     -300.0,
+                     0.0
+                  ],
+                  "type": 1,
+                  "velocity": 7
+               }
+            },
+            {
+               "agent": {
+                  "color": 100,
+                  "id": 9,
+                  "position": [
+                     -300.0,
+                     0.0
+                  ],
+                  "type": 1,
+                  "velocity": 7
+               }
+            }
+         ]
+      }
+   ]
+}

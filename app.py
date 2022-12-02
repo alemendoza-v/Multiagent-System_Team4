@@ -11,7 +11,7 @@ def run(cars):
     # Run simulation
     parameters = {
     'cars': cars,
-    'steps': 5000,
+    'steps': 7000,
     'matrix': [
         [0, 1, 0, 0],
         [0, 0, 0, 0],
